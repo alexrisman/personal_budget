@@ -22,8 +22,7 @@ class CustomStreamListener(StreamListener):
     def on_data(self, tweet):
         tweetJson = json.loads(tweet)
         tweetText = tweetJson['text']
-        if '$' in tweetText:
-            print tweetText
+        if '$' in tweetText and "Win a" not in tweetText and "Lightning Deal!" not in tweetText:
             # parse product description and price from tweet
             dealProduct = tweetText[:tweetText.index('$')-1]
             dealPrice = tweetText[tweetText.index('$')+1:tweetText.index(' ', tweetText.index('$'))]
