@@ -1,4 +1,4 @@
-from tweepy import API
+
 from utils import load_credentials, tweepy_auth, tweepy_api, load_follow_list, print_follow_list, return_follow_id
 import sys
 import json
