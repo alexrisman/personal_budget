@@ -3,6 +3,7 @@ from utils import load_credentials, tweepy_auth, tweepy_api, load_follow_list, p
 import sys
 import json
 import pymongo
+import argparse
 
 client = pymongo.MongoClient()
 collection = client.dealtrader.raw_tweets
@@ -28,7 +29,6 @@ def add_latest_tweets(tweeter_id):
         sys.stdout.write("adding tweets")
     for tweet in tweets:
         tweet = json.loads(json.dumps(tweet._json))
-        sys.stdout.write(tweet['text'])
         raw_tweet= {"id":tweet['id'],
                     "user_id":tweet['user']['id'],
                     "screen_name":tweet['user']['screen_name'],
@@ -41,9 +41,20 @@ def add_latest_tweets(tweeter_id):
         return True
         sys.stdout.write("cant add tweets")
 
-for tweeter in print_follow_list():
-    sys.stdout.write(tweeter)
-    tweeter_id = return_follow_id(tweeter=tweeter)
+ap = argparse.ArgumentParser()
+ap.add_argument("-id", "--follow_id", required=False, default=False, help="Screen name to follow")
+args = vars(ap.parse_args())
+followid = args['follow_id']
+
+if followid:
+    tweeter_id = return_follow_id(tweeter=followid)
     sys.stdout.write(tweeter_id)
     tweeter_id = int(tweeter_id)
     add_latest_tweets(tweeter_id)
+else:
+    for tweeter in print_follow_list():
+        sys.stdout.write(tweeter)
+        tweeter_id = return_follow_id(tweeter=tweeter)
+        sys.stdout.write(tweeter_id)
+        tweeter_id = int(tweeter_id)
+        add_latest_tweets(tweeter_id)
