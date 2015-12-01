@@ -5,14 +5,6 @@ import json
 import pymongo
 import argparse
 
-client = pymongo.MongoClient()
-collection = client.dealtrader.raw_tweets
-collection.create_index([("id", pymongo.ASCENDING)], unique=True)
-
-credentials = load_credentials()
-auth = tweepy_auth(credentials, user=True)
-api = tweepy_api(auth)
-
 def get_latest_id(tweeter_id):
     try:
         tweetsort = collection.find({"user_id": tweeter_id}).sort([("id", pymongo.ASCENDING)])
@@ -38,23 +30,32 @@ def add_latest_tweets(tweeter_id):
     try:
         add_latest_tweets(tweeter_id)
     except:
-        return True
         sys.stdout.write("cant add tweets")
+        return True
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-id", "--follow_id", required=False, default=False, help="Screen name to follow")
-args = vars(ap.parse_args())
-followid = args['follow_id']
+if __name__ == '__main__':
+    client = pymongo.MongoClient()
+    collection = client.dealtrader.raw_tweets
+    collection.create_index([("id", pymongo.ASCENDING)], unique=True)
 
-if followid:
-    tweeter_id = return_follow_id(tweeter=followid)
-    sys.stdout.write(tweeter_id)
-    tweeter_id = int(tweeter_id)
-    add_latest_tweets(tweeter_id)
-else:
-    for tweeter in print_follow_list():
-        sys.stdout.write(tweeter)
-        tweeter_id = return_follow_id(tweeter=tweeter)
+    credentials = load_credentials()
+    auth = tweepy_auth(credentials, user=True)
+    api = tweepy_api(auth)
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-id", "--follow_id", required=False, default=False, help="Screen name to follow")
+    args = vars(ap.parse_args())
+    followid = args['follow_id']
+
+    if followid:
+        tweeter_id = return_follow_id(tweeter=followid)
         sys.stdout.write(tweeter_id)
         tweeter_id = int(tweeter_id)
         add_latest_tweets(tweeter_id)
+    else:
+        for tweeter in print_follow_list():
+            sys.stdout.write(tweeter)
+            tweeter_id = return_follow_id(tweeter=tweeter)
+            sys.stdout.write(tweeter_id)
+            tweeter_id = int(tweeter_id)
+            add_latest_tweets(tweeter_id)
