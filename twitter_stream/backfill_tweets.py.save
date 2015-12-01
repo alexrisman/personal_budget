@@ -1,0 +1,54 @@
+from tweepy import API
+from utils import load_credentials, tweepy_auth, tweepy_api, load_follow_list, print_follow_list, return_follow_id
+import json
+import pymongo
+
+client = pymongo.MongoClient()
+collection = client.dealtrader.raw_tweets
+collection.create_index([("id", pymongo.ASCENDING)], unique=True)
+
+credentials = load_credentials()
+auth = tweepy_auth(credentials, user=True)
+api = tweepy_api(auth)
+
+def get_latest_id(tweeter_id):
+    try:
+        tweetsort = collection.find({"user_id": tweeter_id}).sort([("id", pymongo.ASCENDING)])
+        first_id = tweetsort.next()['id']
+    except:
+        first_id = None
+    return first_id
+
+def add_latest_tweets(tweeter_id):
+    tweets = api.user_timeline(user_id=tweeter_id,max_id=get_latest_id(tweeter_id)-1)
+    for tweet in tweets:
+        tweet = json.loads(json.dumps(tweet._json))
+        raw_tweet= {"id":tweet['id'],
+                    "user_id":tweet['user']['id'],
+                    "screen_name":tweet['user']['screen_name'],
+                    "created_at":tweet['created_at'],
+                    "text":tweet['text']}
+
+
+for tweeter in print_follow_list():
+    print tweeter
+    tweeter_id = return_follow_id(tweeter=tweeter)
+    tweeter_id = int(tweeter_id)
+    print tweeter_id
+    print eeter_id)
+    print get_latest_id(tweeter_id)-1
+
+testlist=[]
+
+tweets = api.user_timeline(user_id=load_follow_list()[1])
+for tweet in tweets:
+    tweet = json.loads(json.dumps(tweet._json))
+    testlist.append(tweet)
+    raw_tweet= {"id":tweet['id'],
+                "user_id":tweet['user']['id'],
+                "screen_name":tweet['user']['screen_name'],
+                "created_at":tweet['created_at'],
+                "text":tweet['text']}
+    #collection.insert(raw_tweet, continue_on_error=True)
+
+#print testlist[0]['created_at']
