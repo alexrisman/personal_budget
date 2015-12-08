@@ -17,16 +17,25 @@ class CustomStreamListener(StreamListener):
         self.counter = 0
         self.verbose = verbose
         self.client = pymongo.MongoClient()
-        self.collection = self.client.dealtrader.tweets
+        self.collection = self.client.dealtrader.raw_tweets
         self.create_index()
         self.log('Streaming started... counting tweets...')
     
     def on_data(self, tweet):
         try:
             tweet = json.loads(tweet)
-            self.log(self.counter)
-            self.collection.insert(tweet, continue_on_error=True)
-            self.counter +=1
+            raw_tweet= {"id":tweet['id'],
+                    "user_id":tweet['user']['id'],
+                    "screen_name":tweet['user']['screen_name'],
+                    "created_at":tweet['created_at'],
+                    "text":tweet['text']}
+            if str(raw_tweet['user_id']) in load_follow_list():
+                self.log(raw_tweet['screen_name'])
+                self.log(self.counter)
+                self.collection.insert(raw_tweet, continue_on_error=True)
+                self.counter +=1
+            else:
+                self.log(raw_tweet['screen_name'])
         except:
             self.log("database error but streamer will continue")
         return True
