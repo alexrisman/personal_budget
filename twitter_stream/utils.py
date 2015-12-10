@@ -27,6 +27,27 @@ def load_follow_list(from_file=True, path='follow_list.json'):
             follow_list = None
         return follow_list.values()
 
+def print_follow_list(from_file=True, path='follow_list.json'):
+    if from_file:
+        try:
+            with open(path) as f:
+                follow_list = json.load(f)
+        except (IOError, ValueError):
+            print "No follow list found. Running without one."
+            follow_list = None
+        return follow_list.keys()
+
+def return_follow_id(from_file=True, path='follow_list.json', tweeter=None):
+    if from_file:
+        try:
+            with open(path) as f:
+                follow_list = json.load(f)
+            tweeter_id = follow_list[tweeter]
+        except (IOError, ValueError):
+            print "No follow list found. Running without one."
+            tweeter_id = None
+        return tweeter_id
+
 def load_credentials(from_file=True, path='credentials.json'):
     if from_file:
         try:
