@@ -13,17 +13,19 @@ with open('tradesComb.csv', 'rb') as f:
     for i in range(1, len(rowsArray)):
         print i
         if rowsArray[i][1] == "": continue
+        pnl = float(rowsArray[i][4]) - float(rowsArray[i][2])
+        if pnl <= 0: continue
         if rowsArray[i][1] in pnlLow:
-            if float(rowsArray[i][4]) - float(rowsArray[i][2]) < pnlLow[rowsArray[i][1]]:
-                pnlLow[rowsArray[i][1]] = float(rowsArray[i][4]) - float(rowsArray[i][2])
+            if pnl < pnlLow[rowsArray[i][1]]:
+                pnlLow[rowsArray[i][1]] = pnl
         else:
-            pnlLow[rowsArray[i][1]] = float(rowsArray[i][4]) - float(rowsArray[i][2])
+            pnlLow[rowsArray[i][1]] = pnl
 
         if rowsArray[i][1] in pnlAvg:
-            pnlAvg[rowsArray[i][1]] += float(rowsArray[i][4]) - float(rowsArray[i][2])
+            pnlAvg[rowsArray[i][1]] += pnl
             pnlCount[rowsArray[i][1]] += 1
         else:
-            pnlAvg[rowsArray[i][1]] = float(rowsArray[i][4]) - float(rowsArray[i][2])
+            pnlAvg[rowsArray[i][1]] = pnl
             pnlCount[rowsArray[i][1]] = 1
 
     tradePnLFile = open("tradePnL.csv", "w")
