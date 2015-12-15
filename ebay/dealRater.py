@@ -70,8 +70,22 @@ class CustomStreamListener(StreamListener):
                     print "DealRating: " + str(dealRating) + "/5 stars : " + tweetText + "," + dealProduct + "," + dealPrice + "," + str(marketPriceAvg) + "," + str(marketPriceLow) + "," + str(int(numListings)) + "," + str(st) + "\n"
                     dealRatingDump.write(tweetText + "," + dealProduct + "," + dealPrice + "," + str(marketPriceAvg) + "," + str(marketPriceLow) + "," + str(int(numListings)) + "," + str(st) + "," + str(dealRating) + "\n")
 
+                dealRatingStars = ""
+                if dealRating == 0:
+                    dealRatingStars = u'☆☆☆☆☆'
+                elif dealRating == 1:
+                    dealRatingStars = u'★☆☆☆☆'
+                elif dealRating == 2:
+                    dealRatingStars = u'★★☆☆☆'
+                elif dealRating == 3:
+                    dealRatingStars = u'★★★☆☆'
+                elif dealRating == 4:
+                    dealRatingStars = u'★★★★☆'
+                elif dealRating == 5:
+                    dealRatingStars = u'★★★★★'
+
                 pubTweet = Twython("1Oqu7GYy9RVUGgATxdsC6IDBH", "VjSUMkJaRJkadurzCyJ8mIl05izjdYz9nXzklgyRqfIou2WN1M", "4564439173-DyQWKd8smdv1mP70qoyGynICpPdkUTUeMCxh7qy", "3OfiZcD6RcaqvjDkiQBc50EzkQ9jr3FOTNJ8T3qUcFvfj")
-                pubTweet.update_status(status="DealRating: " + str(dealRating) + "/5 stars : " + tweetText)
+                pubTweet.update_status(status=dealRatingStars + ": " + tweetText)
 
         return True
 
