@@ -29,7 +29,7 @@ class Tweets(Resource):
 
     def loadSession(self):
 
-        dbPath = 'tweet.db'
+        dbPath = 'tweet.db.old'
         engine = create_engine('sqlite:///%s' % dbPath, echo=True)
 
         metadata = MetaData(engine)
