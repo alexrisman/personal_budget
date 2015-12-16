@@ -24,8 +24,9 @@ class CustomStreamListener(StreamListener):
         tweetText = tweetJson['text']
         if '$' in tweetText and "Win a" not in tweetText and "Lightning Deal!" not in tweetText:
             # parse product description and price from tweet
-            dealProduct = tweetText[:tweetText.index('$')-1]
-            dealPrice = tweetText[tweetText.index('$')+1:tweetText.index(' ', tweetText.index('$'))]
+            dealProduct = tweetText[:tweetText.rfind('$')-1]
+            dealProduct = dealProduct.replace(",", " ")
+            dealPrice = tweetText[tweetText.rfind('$')+1:tweetText.index(' ', tweetText.rfind('$'))]
 
             # search product in api
             f = finding()
@@ -34,20 +35,34 @@ class CustomStreamListener(StreamListener):
             items = dom.getElementsByTagName('item')
 
             for item in items:
+                bidCount = ""
+                positiveFeedbackPercent = ""
                 # pull in product description and price of search results from api
                 marketProduct = item.getElementsByTagName('title')[0].firstChild.nodeValue
+                marketProduct = marketProduct.replace(",", " ")
                 marketPrice = item.getElementsByTagName('sellingStatus')[0].getElementsByTagName('currentPrice')[0].firstChild.nodeValue
+                timeLeft = item.getElementsByTagName('sellingStatus')[0].getElementsByTagName('timeLeft')[0].firstChild.nodeValue
+                if len(item.getElementsByTagName('sellingStatus')[0].getElementsByTagName('bidCount')) > 0: bidCount = item.getElementsByTagName('sellingStatus')[0].getElementsByTagName('bidCount')[0].firstChild.nodeValue
+                if len(item.getElementsByTagName('sellerInfo')) > 0: positiveFeedbackPercent = item.getElementsByTagName('sellerInfo')[0].getElementsByTagName('positiveFeedbackPercent')[0].firstChild.nodeValue
+                hoursLeft = 0.0
+                if "DT" in timeLeft and "H" in timeLeft and "M" in timeLeft:
+                    timeLeft = timeLeft[1:-1]
+                    days = timeLeft.split("DT")[0]
+                    hours = timeLeft.split("DT")[1].split("H")[0]
+                    minutes = timeLeft.split("DT")[1].split("H")[1].split("M")[0]
+                    #print days + " " + hours +  " " + minutes
+                    hoursLeft = float(days) * 24 + float(hours) + float(minutes) / 60
 
                 # dump all matches
                 with open('matches.csv','a') as matchCsv:
-                    matchCsv.write(dealProduct + "," + dealPrice + "," + marketProduct + "," + marketPrice + "\n")
+                    print tweetText + "," + dealProduct + "," + str(dealPrice) + "," + str(marketProduct) + "," + str(marketPrice) + "," + str(hoursLeft) + "," + str(bidCount) + "," + str(positiveFeedbackPercent) + "\n"
+                    matchCsv.write(tweetText + "," + dealProduct + "," + str(dealPrice) + "," + str(marketProduct) + "," + str(marketPrice) + "," + str(hoursLeft) + "," + str(bidCount) + "," + str(positiveFeedbackPercent) + "\n")
 
                 # dump potential trades
                 with open('trades.csv','a') as tradeCsv:
                     if float(marketPrice) > float(dealPrice):
-                        print dealProduct + "," + dealPrice + "," + marketProduct + "," + marketPrice + "\n"
-                        tradeCsv.write(dealProduct + "," + dealPrice + "," + marketProduct + "," + marketPrice + "\n")
-
+                        print "TRADE: " + tweetText + "," + dealProduct + "," + dealPrice + "," + marketProduct + "," + marketPrice + "," + str(hoursLeft) + "," + str(bidCount) + "," + str(positiveFeedbackPercent) + "\n"
+                        tradeCsv.write(tweetText + "," + dealProduct + "," + str(dealPrice) + "," + marketProduct + "," + str(marketPrice) + "," + str(hoursLeft) + "," + str(bidCount) + "," + str(positiveFeedbackPercent) + "\n")
         return True
 
     def on_error(self, status_code):
@@ -64,9 +79,15 @@ if __name__ == '__main__':
     api = tweepy_api(auth)
 
     print 'Running streamer'
-
+    with open('matches.csv','a') as matchCsv:
+        matchCsv.write("Tweet,DealProduct,DealPrice,MarketProduct,MarketPrice,HoursLeft,BidCount,PositiveFeedbackPct\n")
+    with open('trades.csv','a') as tradeCsv:
+        tradeCsv.write("Tweet,DealProduct,DealPrice,MarketProduct,MarketPrice,HoursLeft,BidCount,PositiveFeedbackPct\n")
     sapi = streaming.Stream(auth, CustomStreamListener(api))
     try:
         sapi.filter(follow=load_follow_list())
     except KeyboardInterrupt:
         print "Twitter streaming interrupted"
+    except UnicodeError:
+        print "Unicode error"
+        sapi.filter(follow=load_follow_list())
