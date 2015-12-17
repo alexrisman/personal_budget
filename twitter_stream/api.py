@@ -25,17 +25,22 @@ def get_key(item):
 class Deals(object):
     pass
 
+class Matches(object):
+    pass
+
 class Tweets(Resource):
 
     def loadSession(self):
 
-        dbPath = 'tweet.db.old'
+        dbPath = 'tweet.db'
         engine = create_engine('sqlite:///%s' % dbPath, echo=True)
 
         metadata = MetaData(engine)
         deals = Table('deals', metadata, autoload=True)
+        matches = Table('price_check_history', metadata, autoload=True)
         clear_mappers()
         mapper(Deals, deals)
+        mapper(Matches, matches)
 
         Session = sessionmaker(bind=engine)
         session = Session()
@@ -50,11 +55,23 @@ class Tweets(Resource):
         res = session.query(Deals).all()
         deal_list = []
         for i in range(min_deal, num_deals):
+            tweetid = str(res[i].tweet_id)
+
+            q =  session.query(Matches)
+            mchres = q.filter(Matches.tweet_id == tweetid).all()
+            try:
+                best_price = str(mchres[0].merchant_price)
+                best_link = str(mchres[0].url)
+            except:
+                best_price = 'Not Found'
+                best_link = 'Not Found'
             deal_list.append({
                 'tweet_id': res[i].tweet_id,
                 'description': res[i].description,
                 'price': res[i].price,
-                'url': res[i].url
+                'url': res[i].url,
+                'best_price': best_price,
+                'best_link': best_link
             })
         return deal_list
 
