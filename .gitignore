@@ -30,6 +30,7 @@ credentials.json
 *.log
 *.sql
 *.sqlite
+*.db
  
 # OS generated files #
 ######################
