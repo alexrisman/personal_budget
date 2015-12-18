@@ -17,6 +17,7 @@ def init_db():
               Column('deal_id', Integer()),
               Column('tweet_id', BigInteger()),
               Column('orig_text', String(255)),
+              Column('tweet_ts', String(255)),
               Column('description', String(255)),
               Column('price', String(15)),
               Column('url', String(255)),
@@ -102,6 +103,7 @@ def main():
             try:
                 deal_id = res[i].deal_id
                 origtext = tweet['text']
+                tweetts = str(tweet['created_at'])
                 itemdescr = res[i].description
                 itemprice = res[i].price
                 itemurl = res[i].url
@@ -115,6 +117,7 @@ def main():
                                 deal_id = deal_id,
                                 tweet_id = tweetid,
                                 orig_text = origtext,
+                                tweet_ts = tweetts,
                                 description = itemdescr,
                                 price = itemprice,
                                 url = itemurl,

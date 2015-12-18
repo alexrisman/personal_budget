@@ -16,7 +16,6 @@ import string
 
 from bson import Binary, Code
 from bson.json_util import dumps
-
 # Create a SQLite db using sqlalchemy
 def init_db():
     # create a new metadata object
