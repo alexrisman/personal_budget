@@ -6,4 +6,5 @@ collection = db.raw_tweets
 
 print collection
 print collection.count()
-print collection.find_one()
+print collection.find_one(sort=[("id",1)])
+print collection.find_one(sort=[("id",-1)])
