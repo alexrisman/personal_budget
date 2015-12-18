@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+	<link href="assets/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.css">
+  	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.8.5/css/selectize.default.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/angular.rangeSlider.css">
+
+<body ng-controller="vizController">
+
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+          <p class="navbar-brand">DealTrader</p>
+          <p class="nav-small-red">Group Project for W210, by Matthew Hayes, Doug Kelley, Chula Watugala, and Alex Risman</p>
+      </div>
+
+    </nav>
+    <div class="container">
+        <div class="row">
+
+    <div class="well">
+        <p>Displaying {{tweets.length}} latest deals:</p>
+    </div>
+
+    <div ng-repeat="tweet in tweets" class="well">
+        <p>Tweet ID: <strong>{{tweet.tweet_id}}</strong></p>
+        <p>Product: <strong>{{tweet.description}}</strong></p>
+        <p>Price: {{tweet.price}}</p>
+        <p>URL: {{tweet.url}}</p>
+
+    </div>
+
+    <!-- Angular scripts-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.js"></script>
+    <!-- highcharts.js-->
+    <script src="http://code.highcharts.com/stock/highstock.src.js"></script>
+    <script src="assets/js/highcharts-ng.js"></script>
+
+    <!-- angular bootstrap -->
+    <script src="assets/js/ui-bootstrap-tpls-0.12.1.min.js"></script>
+
+    <!-- ui select and rangeslider-->
+    <!--<script src="assets/js/select.js"></script>-->
+    <script src="assets/js/angular.rangeSlider.js"></script>
+
+    <script src="app/app.js"></script>
+    <script src="app/services.js"></script>
+    <script src="app/controllers.js"></script>
+
+
+</body>
+
+</html>
