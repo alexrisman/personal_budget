@@ -3,10 +3,10 @@
     var vizController = function ($scope, $filter, DTapi) {
         $scope.clicked = {};
         $scope.timeslider = {
-        			min: 1429999200000,
-                    model_min: 1429999200000,
-                    model_max: 1430046000000,
-        			max: 1430046000000
+        			min: 0,
+                    model_min: 0,
+                    model_max: 100,
+        			max: 100
         		};
         $scope.params = {};
         $scope.stackingOpts = [
@@ -18,7 +18,7 @@
         $scope.data = null;
 
         $scope.init = function () {
-            DTapi.tweetData(10)
+            DTapi.tweetData(15)
                 .success(function(response){
                     $scope.tweets = response;
                 });

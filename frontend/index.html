@@ -15,7 +15,7 @@
     <nav class="navbar navbar-default">
       <div class="container-fluid">
           <p class="navbar-brand">DealTrader</p>
-          <p class="nav-small-blue">Group Project for W210, by Matthew Hayes, Doug Kelley, Chula Watugala, and Alex Risman</p>
+          <p class="nav-small-red">Group Project for W210, by Matthew Hayes, Doug Kelley, Chula Watugala, and Alex Risman</p>
       </div>
 
     </nav>
@@ -23,14 +23,17 @@
         <div class="row">
 
     <div class="well">
-        <p>Displaying {{tweets.length}} latest deals:</p>
+        <p>This page live-updates to display the lastest {{tweets.length}} deals matched:</p>
     </div>
 
     <div ng-repeat="tweet in tweets" class="well">
-        <p>Tweet ID: <strong>{{tweet.tweet_id}}</strong></p>
-        <p>Product: <strong>{{tweet.description}}</strong></p>
+        <p>Tweet Timestamp (GMT): <strong>{{tweet.tweet_ts}}</strong></p>
+        <p>Tweet Text: <strong>{{tweet.tweet_text}}</strong></p>
+        <p>Product: <strong>{{tweet.desc}}</strong></p>
         <p>Price: {{tweet.price}}</p>
         <p>URL: {{tweet.url}}</p>
+        <p>Best Price Found: {{tweet.best_price}}</p>
+        <p>Best Price URL: {{tweet.best_link}}</p>
 
     </div>
 
