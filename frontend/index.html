@@ -22,20 +22,31 @@
     <div class="container">
         <div class="row">
 
-    <div class="well">
-        <p>This page live-updates to display the lastest {{tweets.length}} deals matched:</p>
-    </div>
+        <div class="col-sm-4">
 
-    <div ng-repeat="tweet in tweets" class="well">
-        <p>Tweet Timestamp (GMT): <strong>{{tweet.tweet_ts}}</strong></p>
-        <p>Tweet Text: <strong>{{tweet.tweet_text}}</strong></p>
-        <p>Product: <strong>{{tweet.desc}}</strong></p>
-        <p>Price: {{tweet.price}}</p>
-        <p>URL: {{tweet.url}}</p>
-        <p>Best Price Found: {{tweet.best_price}}</p>
-        <p>Best Price URL: {{tweet.best_link}}</p>
+            <div class="well">
+                <p>This page displays the lastest {{tweets.length}} deals matched by DealTrader.</p>
+            </div>
 
-    </div>
+            <div class="form-group">
+                <label>Select number of deals to show: </label>
+                <div range-slider orientation="horizontal" min="timeslider.min" max="timeslider.max" model-min="timeslider.model_min" model-max="timeslider.model_max" step="1" ng-mouseup="getTweets()" ></div>
+            </div>
+        </div>
+
+        <div class="col-sm-8">
+
+            <div ng-repeat="tweet in tweets" class="well">
+                <p>Tweet Timestamp (GMT): <strong>{{tweet.tweet_ts}}</strong></p>
+                <p>Tweet Text: {{tweet.tweet_text}}</p>
+                <p>Product: <strong>{{tweet.desc}}</strong></p>
+                <p>Deal Price: <strong>{{tweet.price}}</strong></p>
+                <p>Best Competing Price: {{tweet.best_price}}</p>
+                <p><a href="{{tweet.url}}">Deal Link</a></p>
+                <p><a href="{{tweet.best_link}}">Best Competitor Link</a></p>
+
+            </div>
+        </div>
 
     <!-- Angular scripts-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js"></script>

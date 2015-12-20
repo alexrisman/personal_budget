@@ -5,8 +5,8 @@
         $scope.timeslider = {
         			min: 0,
                     model_min: 0,
-                    model_max: 100,
-        			max: 100
+                    model_max: 20,
+        			max: 20
         		};
         $scope.params = {};
         $scope.stackingOpts = [
@@ -18,9 +18,17 @@
         $scope.data = null;
 
         $scope.init = function () {
-            DTapi.tweetData(15)
+            DTapi.tweetData('0&0')
                 .success(function(response){
-                    $scope.tweets = response;
+                    $scope.timeslider.max = response[0];
+                    $scope.getTweets();
+                });
+        };
+
+        $scope.getTweets = function () {
+            DTapi.tweetData(($scope.timeslider.model_min).toString()+'&'+($scope.timeslider.model_max).toString())
+                .success(function(response){
+                    $scope.tweets = response[1];
                 });
         };
 

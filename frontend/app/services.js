@@ -2,7 +2,7 @@
     var DTapi = function($http) {
 
         var servers = {'local': 'http://127.0.0.1:5000', 'production': 'http://54.201.129.190:8000'};
-        var server_url = servers.production;
+        var server_url = servers.local;
 
         var factory = {};
         factory.tweetData = function(params) {

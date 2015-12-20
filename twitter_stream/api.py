@@ -41,15 +41,17 @@ class Tweets(Resource):
         session = Session()
         return session
 
-    def get(self, num_rqst):
+    def get(self, min_rqst, max_rqst):
         session = self.loadSession()
         cntres = session.query(func.max(OutputTable.output_id))
         num_deals = cntres[0][0]
-        min_deal = max(num_deals-num_rqst,0)
-        deal_range = {'min': min_deal, 'max': num_deals}
+        min_rqst = max(min_rqst,0)
+        max_rqst = max(min_rqst, max_rqst)
+        min_slct = num_deals-max_rqst
+        max_slct = num_deals-min_rqst
         res = session.query(OutputTable).all()
         deal_list = []
-        for i in range(num_deals*(-1), min_deal*(-1)):
+        for i in range(max_slct*(-1), min_slct*(-1)):
             j=i*(-1)-1
             try:
                 deal_list.append({
@@ -64,10 +66,10 @@ class Tweets(Resource):
             except:
                 pass
             
-        return deal_list
+        return [num_deals, deal_list]
 
 # API ROUTING
-api.add_resource(Tweets, '/tweets/<int:num_rqst>')
+api.add_resource(Tweets, '/tweets/<int:min_rqst>&<int:max_rqst>')
 
 if __name__ == "__main__":
     runner.run()
