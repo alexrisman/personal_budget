@@ -1,6 +1,7 @@
 #! /usr/bin/env python27
 #
 # created 10 dec 2015 DK for W210 Capstone project 
+# -*- coding: utf-8 -*-
 
 # imports
 from datetime import datetime
@@ -11,6 +12,7 @@ from pymongo import MongoClient
 import sys
 import ast
 import re
+import string
 
 from bson import Binary, Code
 from bson.json_util import dumps
@@ -56,6 +58,8 @@ def main():
     
     # and create a connection to it
     connection = engine.connect()
+    # force all strings to utf-8 enoc8 encod
+    connection.text_factory = lambda x: unicode(x, 'utf-8', 'ignore')
     
     # Now set up the parser
     parser = init_parser()
@@ -71,6 +75,15 @@ def main():
     # pull the number of records to skip from the command line
     # should catch this and fail gracefully if not there
     stepsize = int(sys.argv[1])
+        
+    # setup a regex to pull out a price    
+    re1='.*?'	# Non-greedy match on filler
+    re2='(\\$[0-9]+(?:\\.[0-9][0-9])?)(?![\\d])'	# Dollar Amount 1
+
+    rg = re.compile(re1+re2,re.IGNORECASE|re.DOTALL)
+   
+    # setup punctuation stripper
+    table = string.maketrans("","")
     
     for t in xrange(0, collection.count(), stepsize):
         tweet = collection.find()[t]
@@ -90,10 +103,6 @@ def main():
         remainder = re.sub("Lightning Deal!", '', remainder)
         # and parse what's left
         # Try to speed this up -- replace it with a simple regex 
-        re1='.*?'	# Non-greedy match on filler
-        re2='(\\$[0-9]+(?:\\.[0-9][0-9])?)(?![\\d])'	# Dollar Amount 1
-
-        rg = re.compile(re1+re2,re.IGNORECASE|re.DOTALL)
         m = rg.search(remainder)
         if m:
             itemprice = m.group(1)
@@ -112,17 +121,23 @@ def main():
             if obj.label() == 'DESCR':
                 itemdescr = ' '.join([w for w, wtype in obj.leaves()])
         #print "{0}: {1} for {2}".format(urls, itemdescr, itemprice)
-        # use this as a proxy for the success of teh parsing step
+        # use this as a proxy for the success of the parsing step
+#        if len(itemdescr) < 20:
+            # rip out the punctuation and use the rest of the string if what the parser found is too short
+#
+#           itemdescr = remainder.translate(table, string.punctuation)
         if len(urls) > 0:
-            ins = insert(table).values(
+            try: 
+                ins = insert(table).values(
                     price = itemprice,
                     description = itemdescr,
                     url = urls[0],
                     tweet_id = tid
                     )
-            result = connection.execute(ins)
+                result = connection.execute(ins)
         # dump the primary key so we can verify the insert
-            print result.inserted_primary_key
-        
+                print result.inserted_primary_key
+            except UnicodeDecodeError:
+                print "Unicode Error"
 if __name__ == '__main__':
     main()
