@@ -9,11 +9,6 @@
         			max: 20
         		};
         $scope.params = {};
-        $scope.stackingOpts = [
-            { label: 'Absolute', value: 'normal', axislabel:'Tweets' },
-            { label: 'Percentage', value: 'percent', axislabel:'Percent' }
-          ];
-        $scope.stacking = $scope.stackingOpts[1];
 
         $scope.data = null;
 
@@ -21,7 +16,16 @@
             DTapi.tweetData('0&0')
                 .success(function(response){
                     $scope.timeslider.max = response[0];
+                    $scope.getCounts();
                     $scope.getTweets();
+                });
+        };
+
+        $scope.getCounts = function () {
+            DTapi.countData()
+                .success(function(response){
+                    $scope.numtweets = response['tweetcnt'];
+                    $scope.numdeals = response['dealcnt'];
                 });
         };
 

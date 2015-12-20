@@ -5,6 +5,9 @@
         var server_url = servers.local;
 
         var factory = {};
+        factory.countData = function() {
+            return $http.get(server_url+'/counters/');
+        };
         factory.tweetData = function(params) {
             return $http.get(server_url+'/tweets/'+ params);
         };

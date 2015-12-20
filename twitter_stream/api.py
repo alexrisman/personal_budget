@@ -6,6 +6,7 @@ from flask.ext.runner import Runner
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import mapper, sessionmaker, clear_mappers
 from sqlalchemy.sql.expression import func
+from pymongo import MongoClient
 
 app = Flask(__name__)
 runner = Runner(app)
@@ -24,6 +25,49 @@ def get_key(item):
 
 class OutputTable(object):
     pass
+
+class Deals(object):
+    pass
+
+class Matches(object):
+    pass
+
+class Counters(Resource):
+
+    def loadTables(self):
+
+        dbPath = 'tweet.db'
+        engine = create_engine('sqlite:///%s' % dbPath, echo=True)
+
+        metadata = MetaData(engine)
+        deals = Table('deals', metadata, autoload=True)
+        matches = Table('price_check_history', metadata, autoload=True)
+        clear_mappers()
+        mapper(Deals, deals)
+        mapper(Matches, matches)
+
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        return session
+
+    def cntMongo(self):
+
+        # create a connection to the mongo DB
+        client = MongoClient()
+        db = client.dealtrader
+        collection = db.raw_tweets
+        return collection.count()
+
+    def get(self):
+        tables = self.loadTables()
+        tweetcnt = self.cntMongo()
+        cntdeals = tables.query(func.max(Deals.deal_id))
+        dealcnt = cntdeals[0][0]
+        counters = {
+            'tweetcnt': self.cntMongo(),
+            'dealcnt': cntdeals[0][0]
+            }
+        return counters
 
 class Tweets(Resource):
 
@@ -69,6 +113,7 @@ class Tweets(Resource):
         return [num_deals, deal_list]
 
 # API ROUTING
+api.add_resource(Counters, '/counters/')
 api.add_resource(Tweets, '/tweets/<int:min_rqst>&<int:max_rqst>')
 
 if __name__ == "__main__":
