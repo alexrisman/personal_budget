@@ -11,6 +11,7 @@ print collection.find_one(sort=[("id",-1)])
 
 pipe = [{"$group" : {'_id':{ '$substr': ["$created_at", 0, 10] }, 'count':{'$sum':1}}}]
 grouping = collection.aggregate(pipeline=pipe)
+print grouping
 dates=[]
 for row in grouping['result']:
     if row['_id'][4:7] == 'Dec':
@@ -43,4 +44,5 @@ for row in grouping['result']:
 
 dates = sorted(dates, key=lambda k: (k['month'],k['day']) )
 for date in dates:
-    print date
+    #print date
+    pass
